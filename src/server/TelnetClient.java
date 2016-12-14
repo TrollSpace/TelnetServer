@@ -22,8 +22,8 @@ public class TelnetClient {
             System.out.print(">>");
             command = reader.readLine();
             System.out.println(command);
-            out.writeUTF(command);
-            out.writeUTF("\r\n");
+            out.writeChars(command);
+            out.writeChars("\r\n");
             out.flush();
             if (!command.equals("quit")) {
                 System.out.println(in.readUTF());
