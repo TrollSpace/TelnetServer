@@ -1,20 +1,12 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import static server.Hash.md5Custom;
 
 public class TelnetServer {
-
-    public TelnetServer() {
-
-    }
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -24,10 +16,10 @@ public class TelnetServer {
     static class Server extends Thread {
 
         public void run() {
+            Socket clientSocket = null;
 
             int port = 23;
 
-            Socket clientSocket = null;
             try {
                 ServerSocket serverSocket = new ServerSocket(port);
                 clientSocket = serverSocket.accept();
@@ -48,12 +40,14 @@ public class TelnetServer {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inClientStream));
             String readClientStream = null;
             try {
-                while ((readClientStream = reader.readLine()) != null) {
+                do{
+                    readClientStream = reader.readLine();
                     System.out.println("Client message: " + readClientStream);
-
-                    sendResponse(clientSocket, "Ok!\n");
-                }
+                    System.out.flush();
+                    sendResponse(clientSocket, md5Custom(readClientStream));
+                }while(!readClientStream.equals("END"));
             } catch (IOException e) {
+                e.printStackTrace();
                 System.out.println("Can't read message: " + e.getMessage());
                 System.exit(-1);
             }
